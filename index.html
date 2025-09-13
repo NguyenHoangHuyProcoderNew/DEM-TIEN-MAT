@@ -1,198 +1,135 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Đếm Tiền Mặt Nhanh</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f6f9f6;
-    padding: 20px;
-    margin: 0;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So Sánh Tiền Mặt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f9f3;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #009900;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 18px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 10px 5px;
+        }
+        th {
+            background-color: orange;
+            color: white;
+        }
+        td input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            font-size: 16px;
+            text-align: center;
+        }
+        td input::-webkit-outer-spin-button,
+        td input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .total-row {
+            background: #fff6cc;
+            font-weight: bold;
+            font-size: 20px;
+        }
 
-  h2 {
-    text-align: center;
-    color: #006600;
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    font-size: 0.95rem;
-  }
-
-  th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-  }
-
-  th {
-    background: orange;
-    color: white;
-  }
-
-  .header-green {
-    background: #99dd66;
-    color: darkgreen;
-    font-weight: bold;
-  }
-
-  .footer {
-    font-weight: bold;
-    background: #fff3c4;
-    color: black;
-  }
-
-  .input-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
-
-  .input-container input {
-    width: 60px;
-    padding: 4px;
-    font-size: 0.95rem;
-    text-align: right;
-  }
-
-  .input-container span {
-    font-size: 0.9rem;
-  }
-
-  .tien {
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  /* Responsive Mobile */
-  @media (max-width: 600px) {
-    body {
-      padding: 10px;
-    }
-
-    h2 {
-      font-size: 1rem;
-    }
-
-    table {
-      font-size: 0.85rem;
-    }
-
-    .input-container input {
-      width: 50px;
-      padding: 3px;
-      font-size: 0.85rem;
-    }
-
-    .input-container span {
-      font-size: 0.85rem;
-    }
-
-    th, td {
-      padding: 6px;
-    }
-  }
-
-  @media (max-width: 400px) {
-    .input-container input {
-      width: 40px;
-    }
-  }
-</style>
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+            table {
+                font-size: 16px;
+            }
+            td input[type="number"] {
+                width: 60px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h2>SO SÁNH TIỀN MẶT THỰC TẾ VÀ TRÊN MÁY GHI NHẬN</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mệnh Giá</th>
+                    <th>Số tờ</th>
+                    <th>Thành Tiền</th>
+                </tr>
+            </thead>
+            <tbody id="money-table">
+                <!-- Rows will be generated here -->
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3">TIỀN MẶT THỰC TẾ THU ĐƯỢC:</td>
+                    <td id="total">0 VND</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
-  <h2>SO SÁNH TIỀN MẶT THỰC TẾ VÀ TRÊN MÁY GHI NHẬN</h2>
+    <script>
+        const denominations = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000];
+        const tableBody = document.getElementById('money-table');
+        const totalCell = document.getElementById('total');
 
-  <table id="tienTable">
-    <thead>
-      <tr class="header-green">
-        <th>STT</th>
-        <th>Mệnh Giá</th>
-        <th>Số tờ</th>
-        <th>Thành Tiền</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody">
-      <!-- Rows will be inserted here -->
-    </tbody>
-    <tfoot>
-      <tr class="footer">
-        <td colspan="3">TIỀN MẶT THỰC TẾ THU ĐƯỢC:</td>
-        <td id="tongTien" class="tien">0 VND</td>
-      </tr>
-    </tfoot>
-  </table>
+        // Tạo dòng bảng
+        denominations.forEach((value, index) => {
+            const row = document.createElement('tr');
 
-  <script>
-    const denominations = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000];
-    const tableBody = document.getElementById("tableBody");
-    const tongTien = document.getElementById("tongTien");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${value.toLocaleString('vi-VN')} VND</td>
+                <td>
+                    <input type="number" min="0" data-value="${value}" placeholder="0">
+                </td>
+                <td class="row-total">0 VND</td>
+            `;
 
-    denominations.forEach((menhGia, index) => {
-      const row = document.createElement("tr");
+            tableBody.appendChild(row);
+        });
 
-      const sttCell = document.createElement("td");
-      sttCell.textContent = index + 1;
-
-      const menhGiaCell = document.createElement("td");
-      menhGiaCell.textContent = menhGia.toLocaleString("vi-VN") + " VND";
-
-      const soToCell = document.createElement("td");
-      const inputContainer = document.createElement("div");
-      inputContainer.className = "input-container";
-
-      const input = document.createElement("input");
-      input.type = "text"; // allow large numbers
-      input.dataset.menhgia = menhGia;
-      input.addEventListener("input", updateTien);
-
-      const label = document.createElement("span");
-      label.textContent = "Tờ";
-
-      inputContainer.appendChild(input);
-      inputContainer.appendChild(label);
-      soToCell.appendChild(inputContainer);
-
-      const thanhTienCell = document.createElement("td");
-      thanhTienCell.className = "tien";
-      thanhTienCell.textContent = "0 VND";
-
-      row.appendChild(sttCell);
-      row.appendChild(menhGiaCell);
-      row.appendChild(soToCell);
-      row.appendChild(thanhTienCell);
-
-      tableBody.appendChild(row);
-    });
-
-    function updateTien() {
-      let total = 0;
-      const rows = tableBody.querySelectorAll("tr");
-
-      rows.forEach(row => {
-        const input = row.querySelector("input");
-        const menhGia = parseInt(input.dataset.menhgia);
-        const rawValue = input.value.replace(/\D/g, ""); // remove all non-digits
-        input.value = rawValue; // ensure only numbers stay
-
-        const soTo = parseInt(rawValue) || 0;
-        const tien = menhGia * soTo;
-        row.querySelector(".tien").textContent = tien.toLocaleString("vi-VN") + " VND";
-        total += tien;
-      });
-
-      tongTien.textContent = total.toLocaleString("vi-VN") + " VND";
-    }
-  </script>
-
+        // Sự kiện tính toán
+        tableBody.addEventListener('input', function () {
+            let total = 0;
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const input = row.querySelector('input');
+                const rowTotal = row.querySelector('.row-total');
+                const quantity = parseInt(input.value) || 0;
+                const value = parseInt(input.getAttribute('data-value'));
+                const subtotal = quantity * value;
+                rowTotal.textContent = subtotal.toLocaleString('vi-VN') + ' VND';
+                total += subtotal;
+            });
+            totalCell.textContent = total.toLocaleString('vi-VN') + ' VND';
+        });
+    </script>
 </body>
 </html>
-
