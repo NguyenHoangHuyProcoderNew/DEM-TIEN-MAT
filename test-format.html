@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Format</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Test Thousand Separator Formatting</h2>
+    <p>Nhập số tiền (sẽ tự động format với dấu chấm):</p>
+    <input type="text" id="testInput" placeholder="Nhập số tiền...">
+
+    <div class="result">
+        <strong>Giá trị hiển thị:</strong> <span id="displayValue">-</span><br>
+        <strong>Giá trị thực (raw):</strong> <span id="rawValue">-</span>
+    </div>
+
+    <script>
+        const input = document.getElementById('testInput');
+        const displayValue = document.getElementById('displayValue');
+        const rawValue = document.getElementById('rawValue');
+
+        function formatNumberWithDots(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        input.addEventListener('input', function (e) {
+            const cursorPosition = e.target.selectionStart;
+            const oldValue = e.target.value;
+            const oldLength = oldValue.length;
+
+            // Remove all non-digit characters
+            let numericValue = e.target.value.replace(/\D/g, '');
+
+            // Store raw value
+            e.target.dataset.rawValue = numericValue;
+
+            // Format with thousand separators
+            if (numericValue) {
+                const formatted = formatNumberWithDots(parseInt(numericValue));
+                e.target.value = formatted;
+
+                // Calculate new cursor position
+                const newLength = formatted.length;
+                const lengthDiff = newLength - oldLength;
+                const newCursorPosition = cursorPosition + lengthDiff;
+
+                // Restore cursor position
+                e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+
+                // Update display
+                displayValue.textContent = formatted;
+                rawValue.textContent = numericValue;
+            } else {
+                e.target.value = '';
+                displayValue.textContent = '-';
+                rawValue.textContent = '-';
+            }
+        });
+    </script>
+</body>
+
+</html>
